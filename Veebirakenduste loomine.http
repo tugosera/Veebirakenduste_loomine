@@ -1,0 +1,6 @@
+@Veebirakenduste_loomine_HostAddress = http://localhost:5267
+
+GET {{Veebirakenduste_loomine_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
