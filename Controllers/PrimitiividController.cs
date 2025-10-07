@@ -44,5 +44,41 @@ namespace veeb.Controllers
                 Console.WriteLine("See on logi nr " + i);
             }
         }
+
+        [HttpGet("random/{nr1}/{nr2}")]
+        public int GetRandomBetween(int nr1, int nr2)
+        {
+            Random rand = new Random();
+            int min = Math.Min(nr1, nr2);
+            int max = Math.Max(nr1, nr2);
+            return rand.Next(min, max + 1);
+        }
+
+        [HttpGet("age/{birthYear}")]
+        [HttpGet("age/{birthYear}/{birthMonth}/{birthDay}")]
+        public string GetAge(int birthYear, int birthMonth, int birthDay)
+        {
+            DateTime today = DateTime.Today;
+            DateTime birthdayThisYear;
+
+            try
+            {
+                birthdayThisYear = new DateTime(today.Year, birthMonth, birthDay);
+            }
+            catch
+            {
+                return "Некорректные данные: неверный месяц или день.";
+            }
+
+            int age = today.Year - birthYear;
+
+            if (today < birthdayThisYear)
+            {
+                age--;
+            }
+
+            return $"Ты {age} лет(года) {(today >= birthdayThisYear ? "т.к. день рождения в этом году уже был" : "т.к. день рождения в этом году ещё не был")}.";
+        }
+
     }
 }
