@@ -30,23 +30,8 @@ public class TootedController
         return _tooted;
     }
 
-    [HttpGet("kustuta2/{index}")]
-    public string Delete2(int index)
-    {
-        _tooted.RemoveAt(index);
-        return "Kustutatud!";
-    }
-
     [HttpGet("lisa/{id}/{nimi}/{hind}/{aktiivne}")]
     public List<Toode> Add(int id, string nimi, double hind, bool aktiivne)
-    {
-        Toode toode = new Toode(id, nimi, hind, aktiivne);
-        _tooted.Add(toode);
-        return _tooted;
-    }
-
-    [HttpGet("lisa")] // GET /tooted/lisa?id=1&nimi=Koola&hind=1.5&aktiivne=true
-    public List<Toode> Add2([FromQuery] int id, [FromQuery] string nimi, [FromQuery] double hind, [FromQuery] bool aktiivne)
     {
         Toode toode = new Toode(id, nimi, hind, aktiivne);
         _tooted.Add(toode);
@@ -63,23 +48,77 @@ public class TootedController
         return _tooted;
     }
 
-    // või foreachina:
 
-    [HttpGet("hind-dollaritesse2/{kurss}")] // GET /tooted/hind-dollaritesse2/1.5
-    public List<Toode> Dollaritesse2(double kurss)
+
+    [HttpGet("muuda-aktiivsust/{id}")]
+    public List<Toode> MuudaAktiivsust(int id)
     {
-        foreach (var t in _tooted)
+        var toode = _tooted.FirstOrDefault(t => t.Id == id);
+        if (toode != null)
         {
-            t.Price = t.Price * kurss;
+            toode.IsActive = !toode.IsActive; 
         }
+        return _tooted;
+    }
 
-        return _tooted; 
+    [HttpGet("muuda-nimi/{id}/{uusNimi}")] 
+    public List<Toode> MuudaNimi(int id, string uusNimi)
+    {
+        var toode = _tooted.FirstOrDefault(t => t.Id == id);
+        if (toode != null)
+        {
+            toode.Name = uusNimi;         }
+        return _tooted;
+    }
+
+    [HttpGet("muuda-hind/{id}/{korrutis}")] 
+    public List<Toode> MuudaHind(int id, double korrutis)
+    {
+        var toode = _tooted.FirstOrDefault(t => t.Id == id);
+        if (toode != null)
+        {
+            toode.Price = toode.Price * korrutis; 
+        }
+        return _tooted;
     }
 
 
 
 
+    [HttpDelete("kustuta-koik")]
+    public string KustutaKoik()
+    {
+        _tooted.Clear();
+        return "Kõik tooted on kustutatud.";
+    }
 
+    [HttpPut("muuda-aktiivsust-vale")]
+    public List<Toode> MuudaKoikideAktiivsustValele()
+    {
+        foreach (var toode in _tooted)
+        {
+            toode.IsActive = false;
+        }
+        return _tooted;
+    }
 
+    [HttpGet("toode/{index}")]
+    public Toode GetToodeByIndex(int index)
+    {
+        if (index < 0 || index >= _tooted.Count)
+        {
+            return null;
+        }
+        return _tooted[index];
+    }
 
+    [HttpGet("kalleim")]
+    public Toode GetKalleimToode()
+    {
+        if (_tooted.Count == 0)
+        {
+            return null;
+        }
+        return _tooted.OrderByDescending(t => t.Price).First();
+    }
 }
